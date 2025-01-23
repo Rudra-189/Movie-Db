@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie/App_Resources/App_Colors.dart';
+import 'package:movie/App_Resources/widget/Login_Singnup_common_ui.dart';
 import 'package:movie/Login%20Page.dart';
 
 class Splash_Page extends StatefulWidget {
@@ -21,15 +23,9 @@ class _Splash_PageState extends State<Splash_Page> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColor.primaryBackgroundColor,
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Movies',style: TextStyle(color: Colors.green.shade600,fontWeight: FontWeight.w900,fontSize: 30,letterSpacing: 3),),
-            Text('Stream Your Favorites Anytime',style: TextStyle(color: Colors.white,fontSize: 15),)
-          ],
-        ),
+        child: LS_commn_Ui(),
       ),
     );
   }

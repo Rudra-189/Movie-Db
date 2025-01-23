@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:movie/Api/Api_Link.dart';
+import 'package:movie/App_Resources/App_Colors.dart';
+import 'package:movie/Exception/App_exception.dart';
 import 'package:movie/utils/RecommendationsDataModel.dart';
 import 'package:readmore/readmore.dart';
 
@@ -22,22 +25,26 @@ class _Detail_PageState extends State<Detail_Page> {
   var data;
   @override
   Widget build(BuildContext context) {
+
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: data == null ? Center(child: CircularProgressIndicator(color: Colors.green.shade600,),) :CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: Colors.black,
+            backgroundColor: AppColor.primaryBackgroundColor,
             pinned: false,
-            expandedHeight:550,
+            expandedHeight:height* 0.6,
             automaticallyImplyLeading: false,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                height: 550,
+                height: height* 0.6,
                 width:MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: NetworkImage("https://image.tmdb.org/t/p/w500${data['poster_path']}",),
+                        image: NetworkImage("https://image.tmdb.org/t/p/w500${data['poster_path']}"),
                         fit: BoxFit.cover
                     )
                 ),
@@ -53,26 +60,26 @@ class _Detail_PageState extends State<Detail_Page> {
                   SizedBox(height: 10,),
                   Row(
                     children: [
-                      Text("Name : ",style: TextStyle(color: Colors.white,fontSize: 13),),
-                      Text(data['original_title'],style: TextStyle(color: Colors.green.shade600,fontSize: 13),),
+                      Text("Name : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                      Text(data['original_title'],style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),),
                     ],
                   ),
                   Row(
                     children: [
-                      Text("Release Date : ",style: TextStyle(color: Colors.white,fontSize: 13),),
-                      Text(data['release_date'].toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),),
+                      Text("Release Date : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                      Text(data['release_date'].toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),),
                     ],
                   ),
                   Row(
                     children: [
-                      Text("Languages : ",style: TextStyle(color: Colors.white,fontSize: 13),),
-                      Text(data['original_language'],style: TextStyle(color: Colors.green.shade600,fontSize: 13),),
+                      Text("Languages : ",style: TextStyle(color:AppColor.movieDetailFrontColor,fontSize: 13),),
+                      Text(data['original_language'],style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),),
                     ],
                   ),
                   Row(
                     children: [
-                      Text("Rating : ",style: TextStyle(color: Colors.white,fontSize: 13),),
-                      Text(data['vote_average'].toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),),
+                      Text("Rating : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                      Text(data['vote_average'].toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),),
                     ],
                   ),
                   Divider(
@@ -81,22 +88,22 @@ class _Detail_PageState extends State<Detail_Page> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Over View of Movie",style: TextStyle(color: Colors.white),)
+                      Text("Over View of Movie",style: TextStyle(color: AppColor.movieDetailFrontColor),)
                     ],),
                   SizedBox(height: 10,),
                   ReadMoreText(
                     data['overview'],
-                    style: TextStyle(color: Colors.white.withOpacity(0.75)),
+                    style: TextStyle(color: AppColor.movieDetailFrontColor),
                   ),
                   SizedBox(height: 10,),
                   Divider(
                     color: Colors.white.withOpacity(0.25),
                   ),
                   SizedBox(height: 10,),
-                  Text("Similar Movies",style: TextStyle(color: Colors.white),),
+                  Text("Similar Movies",style: TextStyle(color: AppColor.subFontColor),),
                   SizedBox(height: 10,),
                   Container(
-                    height: 250,
+                    height: height * 0.35,
                     child: FutureBuilder<RecommendationsDataModel>(
                       future: getdata(widget.id),
                       builder: (context, snapshot) {
@@ -109,16 +116,16 @@ class _Detail_PageState extends State<Detail_Page> {
                           return ListView.builder(itemBuilder: (context, index) {
                             return InkWell(
                               child:Container(
-                                height: 325,
-                                width: 175,
+                                height: height * 0.35,
+                                width: width * 0.45,
                                 color: Colors.white.withOpacity(0.2),
                                 margin: EdgeInsets.only(right: 10),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Container(
-                                      height: 250,
-                                      width: 200,
+                                      height: height * 0.275,
+                                      width: width * 0.45,
                                       decoration: BoxDecoration(
                                           image: DecorationImage(
                                               image: NetworkImage("https://image.tmdb.org/t/p/w500${Data[index].posterPath}"),
@@ -127,37 +134,34 @@ class _Detail_PageState extends State<Detail_Page> {
                                       ),
                                     ),
                                     Expanded(
-                                      child:Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text("Title : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 12),),
-                                                Text(Data[index].originalTitle.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 12),)
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text("Language : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 12),),
-                                                Text(Data[index].originalLanguage.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 12),)
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text("Rating : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 12),),
-                                                Text(Data[index].voteAverage.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 12),)
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text("Date : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 12),),
-                                                Text(Data[index].releaseDate.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 12),)
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
+                                      child:Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text("Title : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 12),),
+                                              Text(Data[index].originalTitle.toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 12),)
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("Language : ",style: TextStyle(color:AppColor.movieDetailFrontColor,fontSize: 12),),
+                                              Text(Data[index].originalLanguage.toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 12),)
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("Rating : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 12),),
+                                              Text(Data[index].voteAverage.toString(),style: TextStyle(color:AppColor.primaryFontColor,fontSize: 12),)
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text("Date : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 12),),
+                                              Text(Data[index].releaseDate.toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 12),)
+                                            ],
+                                          )
+                                        ],
+                                      )
                                     )
                                   ],
                                 ),
@@ -174,7 +178,7 @@ class _Detail_PageState extends State<Detail_Page> {
                       },
                     )
                   ),
-                  SizedBox(height: 100,)
+                  SizedBox(height: 10,)
                 ],
               ),
             ),
@@ -185,24 +189,50 @@ class _Detail_PageState extends State<Detail_Page> {
   }
   Future<void> getMovieDetail(int id)async{
     print(id);
-    final response = await http.get(Uri.parse("https://api.themoviedb.org/3/movie/${id}?api_key=89182e82e2191b23aef42078ab24439b"));
+    final response = await http.get(Uri.parse(Api.idsearchUrl(id)));
     final jsondata = jsonDecode(response.body);
-    setState(() {
-      data = jsondata;
-    });
-    print(data);
+    switch (response.statusCode){
+      case 200:
+        setState(() {
+          data = jsondata;
+        });
+      case 400:
+        throw BadRequestException("This is Bad Request");
+      case 500:
+        throw InternalServerException("Internal Server Error");
+      case 404:
+        throw NotFoundException("Data Not Found");
+      default :
+        throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
+    }
+    // setState(() {
+    //   data = jsondata;
+    // });
+    // print(data);
   }
 
   Future<RecommendationsDataModel> getdata(int id) async{
     print("RecommendationsDataModel : "+id.toString());
-    final response = await http.get(Uri.parse("https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=89182e82e2191b23aef42078ab24439b&page=1"));
+    final response = await http.get(Uri.parse(Api.recommendationsUrl(id)));
     final jsondata = jsonDecode(response.body);
-
-    if(response.statusCode == 200){
-      return RecommendationsDataModel.fromJson(jsondata);
-    }else{
-      throw Exception('Failed to load movie data');
+    switch (response.statusCode){
+      case 200:
+        return RecommendationsDataModel.fromJson(jsondata);
+      case 400:
+        throw BadRequestException("This is Bad Request");
+      case 500:
+        throw InternalServerException("Internal Server Error");
+      case 404:
+        throw NotFoundException("Data Not Found");
+      default :
+        throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
     }
+
+    // if(response.statusCode == 200){
+    //   return RecommendationsDataModel.fromJson(jsondata);
+    // }else{
+    //   throw Exception('Failed to load movie data');
+    // }
   }
 
 }

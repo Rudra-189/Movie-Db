@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:movie/Api_Link.dart';
+import 'package:movie/Api/Api_Link.dart';
+import 'package:movie/App_Resources/App_Colors.dart';
+import 'package:movie/App_Resources/widget/Button_Ui_2.dart';
 import 'package:movie/Detail%20Page.dart';
+import 'package:movie/Exception/App_exception.dart';
 import 'package:movie/Search%20Result%20Page.dart';
 import 'package:movie/utils/SearchDataModel.dart';
 
@@ -15,13 +18,17 @@ class Search_Page extends StatefulWidget {
 
 class _Search_PageState extends State<Search_Page> {
 
-  TextEditingController SearchController = TextEditingController();
-  List SearchData = [];
+  TextEditingController searchController = TextEditingController();
+  List searchData = [];
 
-  var Search=day;
+  var Search=Api.day;
 
   @override
   Widget build(BuildContext context) {
+
+    final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body:SafeArea(
@@ -32,7 +39,7 @@ class _Search_PageState extends State<Search_Page> {
               children: [
                 SizedBox(height: 20,),
                 TextFormField(
-                  controller: SearchController,
+                  controller: searchController,
                   style: TextStyle(color: Colors.white),
                   cursorColor: Colors.green.shade600,
                   decoration: InputDecoration(
@@ -53,15 +60,15 @@ class _Search_PageState extends State<Search_Page> {
                       prefixIcon: Icon(Icons.search,color: Colors.green.shade600,),
                       suffixIcon: IconButton(
                         onPressed: (){
-                          if(SearchController.text.toString().isNotEmpty){
+                          if(searchController.text.toString().isNotEmpty){
                             setState(() {
                             });
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Search_Result_Page(name: SearchController.text.toLowerCase()),)).then((value) {
-                              print(SearchController.text.toLowerCase().toString());
-                              if(!SearchData.contains(SearchController.text.toLowerCase().toString())){
-                                SearchData.add(SearchController.text.toLowerCase().toString());
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Search_Result_Page(name: searchController.text.toLowerCase()),)).then((value) {
+                              print(searchController.text.toLowerCase().toString());
+                              if(!searchData.contains(searchController.text.toLowerCase().toString())){
+                                searchData.add(searchController.text.toLowerCase().toString());
                               }
-                              SearchController.clear();
+                              searchController.clear();
                             },);
                           }
                         },
@@ -70,7 +77,7 @@ class _Search_PageState extends State<Search_Page> {
                   ),
                 ),
                 SizedBox(height: 10,),
-                SearchData.isNotEmpty ? Container(
+                searchData.isNotEmpty ? Container(
                   height: 30,
                   child: Row(
                     mainAxisAlignment:MainAxisAlignment.spaceBetween,
@@ -84,32 +91,32 @@ class _Search_PageState extends State<Search_Page> {
                               height: 30,
                               padding: EdgeInsets.all(5),
                               margin: EdgeInsets.only(left: 5),
-                              child: Text(SearchData[index].toString(),style: TextStyle(color: Colors.white),),
+                              child: Text(searchData[index].toString(),style: TextStyle(color: Colors.white),),
                               decoration: BoxDecoration(
                                   border: Border(
-                                    bottom: BorderSide(color: Colors.green),
-                                    top: BorderSide(color: Colors.green),
-                                    left: BorderSide(color: Colors.green),
-                                    right: BorderSide(color: Colors.green),
+                                    bottom: BorderSide(color: AppColor.primaryColor),
+                                    top: BorderSide(color: AppColor.primaryColor),
+                                    left: BorderSide(color: AppColor.primaryColor),
+                                    right: BorderSide(color: AppColor.primaryColor),
                                   ),
                                   borderRadius: BorderRadius.circular(11)
                               ),
                             ),
                             onTap: (){
                               setState(() {
-                                SearchController.text = SearchData[index];
+                                searchController.text = searchData[index];
                               });
                             },
                           );
                         },
-                          itemCount: SearchData.length,
+                          itemCount: searchData.length,
                           scrollDirection: Axis.horizontal,
                         ),
                       ),
                       IconButton(
                           onPressed: (){
                             setState(() {
-                              SearchData.clear();
+                              searchData.clear();
                             });
                           },
                           icon:Icon(Icons.clear,color: Colors.green.shade600,)
@@ -122,35 +129,19 @@ class _Search_PageState extends State<Search_Page> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     InkWell(
-                      child: Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.green.shade600,
-                            borderRadius: BorderRadius.circular(11)
-                        ),
-                        child: Center(child: Text("Popular Ty Shows",style: TextStyle(color: Colors.white),)),
-                      ),
+                      child: custom_Button_2(name: "Popular Ty Shows"),
                       onTap: (){
                         setState(() {
-                          Search = popularTv;
+                          Search = Api.popularTv;
                         });
 
                       },
                     ),
                     InkWell(
-                      child: Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.green.shade600,
-                            borderRadius: BorderRadius.circular(11)
-                        ),
-                        child: Center(child: Text("Popular Movies",style: TextStyle(color: Colors.white),)),
-                      ),
+                      child: custom_Button_2(name: "Popular Movies"),
                       onTap: (){
                         setState(() {
-                          Search = popularMovie;
+                          Search = Api.popularMovie;
                         });
 
                       },
@@ -162,52 +153,28 @@ class _Search_PageState extends State<Search_Page> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     InkWell(
-                      child: Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.green.shade600,
-                            borderRadius: BorderRadius.circular(11)
-                        ),
-                        child: Center(child: Text("Day Trending",style: TextStyle(color: Colors.white),)),
-                      ),
+                      child: custom_Button_2(name: "Day Trending"),
                       onTap: (){
                         setState(() {
-                          Search =day;
+                          Search =Api.day;
                         });
 
                       },
                     ),
                     InkWell(
-                      child: Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.green.shade600,
-                            borderRadius: BorderRadius.circular(11)
-                        ),
-                        child: Center(child: Text("Week Trending",style: TextStyle(color: Colors.white),)),
-                      ),
+                      child: custom_Button_2(name: "Week Trending"),
                       onTap: (){
                         setState(() {
-                          Search =week;
+                          Search =Api.week;
                         });
 
                       },
                     ),
                     InkWell(
-                      child:Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.green.shade600,
-                            borderRadius: BorderRadius.circular(11)
-                        ),
-                        child: Center(child: Text("Top Rated Tv Shows",style: TextStyle(color: Colors.white),)),
-                      ),
+                      child:custom_Button_2(name: "Top Rated Tv Shows"),
                       onTap: (){
                         setState(() {
-                          Search =topratedTv;
+                          Search =Api.topratedTv;
                         });
 
                       },
@@ -219,18 +186,10 @@ class _Search_PageState extends State<Search_Page> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     InkWell(
-                      child: Container(
-                        height: 40,
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        decoration: BoxDecoration(
-                            color: Colors.green.shade600,
-                            borderRadius: BorderRadius.circular(11)
-                        ),
-                        child: Center(child: Text("Top Rated Movie",style: TextStyle(color: Colors.white),)),
-                      ),
+                      child:custom_Button_2(name: "Top Rated Movie"),
                       onTap: (){
                         setState(() {
-                          Search =topratedMovie;
+                          Search =Api.topratedMovie;
                         });
                       },
                     ),
@@ -238,7 +197,7 @@ class _Search_PageState extends State<Search_Page> {
                 ),
                 SizedBox(height: 25,),
                 Container(
-                  height: 2240,
+                  height: 2300,
                   child: FutureBuilder<SearchDataModel>(
                     future: getData(Search),
                     builder: (context, snapshot) {
@@ -254,7 +213,7 @@ class _Search_PageState extends State<Search_Page> {
                             crossAxisCount: 2,
                             crossAxisSpacing: 25,
                             mainAxisSpacing: 25,
-                            mainAxisExtent: 350,
+                            mainAxisExtent: height * 0.45,
                           ) ,
                           itemBuilder: (context, index) {
                             return InkWell(
@@ -263,7 +222,7 @@ class _Search_PageState extends State<Search_Page> {
                                 child: Column(
                                   children: [
                                     Container(
-                                      height: 250,
+                                      height:height * 0.315,
                                       decoration: BoxDecoration(
                                           image: DecorationImage(
                                               image: NetworkImage("https://image.tmdb.org/t/p/w500${result[index].posterPath}"),
@@ -279,27 +238,27 @@ class _Search_PageState extends State<Search_Page> {
                                               width:350,
                                               child:Row(
                                                 children: [
-                                                  Text("Title : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                                                  Text(result[index].originalTitle.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                                                  Text("Title : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                                                  Text(result[index].originalTitle.toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                                                 ],
                                               ),
                                             ),
                                             Row(
                                               children: [
-                                                Text("Language : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                                                Text(result[index].originalLanguage.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                                                Text("Language : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                                                Text(result[index].originalLanguage.toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                                               ],
                                             ),
                                             Row(
                                               children: [
-                                                Text("Rating : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                                                Text(result[index].voteAverage.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                                                Text("Rating : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                                                Text(result[index].voteAverage.toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                                               ],
                                             ),
                                             Row(
                                               children: [
-                                                Text("Date : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                                                Text(result[index].releaseDate.toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                                                Text("Date : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                                                Text(result[index].releaseDate.toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                                               ],
                                             )
                                           ],
@@ -330,11 +289,24 @@ class _Search_PageState extends State<Search_Page> {
     print("getdata is call on : "+data);
     final response = await http.get(Uri.parse(data));
     final jsondata = jsonDecode(response.body);
-    if(response.statusCode == 200){
-      return SearchDataModel.fromJson(jsondata);
-    }else{
-      throw Exception('Failed to load movie data');
+    switch (response.statusCode){
+      case 200:
+        return SearchDataModel.fromJson(jsondata);
+      case 400:
+        throw BadRequestException("This is Bad Request");
+      case 500:
+        throw InternalServerException("Internal Server Error");
+      case 404:
+        throw NotFoundException("Data Not Found");
+      default :
+        throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
     }
+    // if(response.statusCode == 200){
+    //   return SearchDataModel.fromJson(jsondata);
+    // }else{
+    //   throw Exception('Failed to load movie data');
+    // }
   }
 
 }
+

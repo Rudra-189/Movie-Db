@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:movie/App_Resources/App_Colors.dart';
+import 'package:movie/App_Resources/App_Icons.dart';
+import 'package:movie/App_Resources/widget/Button_Ui.dart';
+import 'package:movie/App_Resources/widget/Login_Singnup_common_ui.dart';
+import 'package:movie/App_Resources/widget/Password_TextFromFiled_Ui.dart';
+import 'package:movie/App_Resources/widget/TextFromFiled_Ui.dart';
+import 'package:movie/demo.dart';
 
 import 'Home Page.dart';
 import 'SignUp Page.dart';
@@ -12,35 +19,26 @@ class Login_Page extends StatefulWidget {
 
 class _Login_PageState extends State<Login_Page> {
 
-  final TextEditingController emailcontroller = TextEditingController();
-  final TextEditingController passwordcontroller = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
 
   final _formkey=GlobalKey<FormState>();
 
-  bool _isvisible = false;
-
   @override
   Widget build(BuildContext context) {
 
-    double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppColor.primaryBackgroundColor,
         resizeToAvoidBottomInset: false,
         body: SafeArea(
           child: Column(
             children: [
               Container(
                 height: screenHeight *0.5,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Movies',style: TextStyle(color: Colors.green.shade600,fontWeight: FontWeight.w900,fontSize: 30,letterSpacing: 3),),
-                    Text('Stream Your Favorites Anytime',style: TextStyle(color: Colors.white,fontSize: 15),)
-                  ],
-                ),
+                child: LS_commn_Ui(),
               ),
               Expanded(
                 flex: 2,
@@ -51,77 +49,9 @@ class _Login_PageState extends State<Login_Page> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextFormField(
-                          controller: emailcontroller,
-                          style: TextStyle(color: Colors.white),
-                          cursorColor: Colors.white,
-                          decoration: InputDecoration(
-                            fillColor: Colors.white.withOpacity(0.25),
-                            filled: true,
-                            hintText: ' Email',
-                            hintStyle: TextStyle(
-                                color: Colors.white.withOpacity(0.3), fontSize: 16),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.white.withOpacity(0.1)
-                              ),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
-                                borderSide: BorderSide(
-                                  color: Colors.green.shade600,
-                                )),
-                            prefixIcon: Icon(Icons.alternate_email,
-                                color: Colors.green.shade600),
-                          ),
-                        ),
+                        custom_TextFromFiled(controller: emailController, hint: ' Email', prefixIcon: AppIcon.emailIcon,),
                         SizedBox(height: 15,),
-                        TextFormField(
-                          obscureText: _isvisible,
-                          controller: passwordcontroller,
-                          style: TextStyle(color: Colors.white),
-                          cursorColor: Colors.white,
-                          decoration: InputDecoration(
-                              fillColor: Colors.white.withOpacity(0.25),
-                              filled: true,
-                              hintText: ' Password',
-                              hintStyle: TextStyle(
-                                  color: Colors.white.withOpacity(0.3), fontSize: 16),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(
-                                      color: Colors.white.withOpacity(0.1)
-                                  )
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(
-                                    color: Colors.green.shade600,
-                                  )),
-                              prefixIcon:
-                              Icon(Icons.lock, color: Colors.green.shade600),
-                              suffixIcon: _isvisible ? IconButton(icon: Icon(
-                                Icons.visibility_off,
-                                color: Colors.green.shade600.withOpacity(0.6),
-                                size: 20,
-                              ), onPressed: () {
-                                setState(() {
-                                  _isvisible = false;
-                                });
-                              },) : IconButton(icon: Icon(
-                                Icons.visibility,
-                                color: Colors.green.shade600.withOpacity(0.6),
-                                size: 20,
-                              ), onPressed: () {
-                                setState(() {
-                                  _isvisible = true;
-                                });
-                              },)
-                          ),
-                          validator: (value){
-                          },
-                        ),
+                        custom_PasswordTextFromFiled(controller: passwordController, hint: ' Password',),
                         const SizedBox(
                           height: 5,
                         ),
@@ -150,18 +80,7 @@ class _Login_PageState extends State<Login_Page> {
                   children: [
                     Expanded(child: Container()),
                     InkWell(
-                      child: Container(
-                        height: 60,
-                        width: 150,
-                        decoration: BoxDecoration(
-                            color: Colors.green.shade600,
-                            borderRadius: BorderRadius.circular(17)),
-                        child: Center(
-                            child: Text(
-                              'Login',
-                              style: TextStyle(color: Colors.white, fontSize: 17),
-                            )),
-                      ),
+                      child: custom_Button(name: "Login"),
                       onTap: () async {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => Home_Page(),));
                       },
@@ -173,12 +92,12 @@ class _Login_PageState extends State<Login_Page> {
                         children: [
                           Text(
                             "you don't have an account? ",
-                            style: TextStyle(color: Colors.green.shade600),
+                            style: TextStyle(color: AppColor.primaryFontColor),
                           ),
                           InkWell(
                             child: Text(
                               "Signup",
-                              style: TextStyle(color: Colors.white,decoration: TextDecoration.underline,decorationColor: Colors.white),
+                              style: TextStyle(color: AppColor.subFontColor,decoration: TextDecoration.underline,decorationColor: Colors.white),
                             ),
                             onTap: () {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => Signup_Page(),));

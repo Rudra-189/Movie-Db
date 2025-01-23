@@ -1,8 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:readmore/readmore.dart';
+import 'package:movie/Api/Api_Link.dart';
+import 'package:movie/App_Resources/App_Colors.dart';
+import 'package:movie/Exception/App_exception.dart';
 
 class Search_Result_Page extends StatefulWidget {
   String name;
@@ -59,7 +60,7 @@ class _Search_Result_PAgeState extends State<Search_Result_Page> {
                       width: 150,
                       decoration: BoxDecoration(
                           image: DecorationImage(
-                              image: NetworkImage("https://image.tmdb.org/t/p/w500${data[0]['poster_path'].toString()}"),
+                              image: NetworkImage("https://image.tmdb.org/t/p/w500${data[0]['poster_path']}"),
                               fit: BoxFit.cover
                           )
                       ),
@@ -71,26 +72,26 @@ class _Search_Result_PAgeState extends State<Search_Result_Page> {
                         children: [
                           Row(
                             children: [
-                              Text("Title : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                              Text(data[0]['original_title'].toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                              Text("Title : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                              Text(data[0]['original_title'].toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                             ],
                           ),
                           Row(
                             children: [
-                              Text("Language : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                              Text(data[0]['original_language'].toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                              Text("Language : ",style: TextStyle(color:AppColor.movieDetailFrontColor,fontSize: 13),),
+                              Text(data[0]['original_language'].toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                             ],
                           ),
                           Row(
                             children: [
-                              Text("Rating : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                              Text(data[0]['vote_average'].toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                              Text("Rating : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                              Text(data[0]['vote_average'].toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                             ],
                           ),
                           Row(
                             children: [
-                              Text("Date : ",style: TextStyle(color: Colors.white.withOpacity(0.75),fontSize: 13),),
-                              Text(data[0]['release_date'].toString(),style: TextStyle(color: Colors.green.shade600,fontSize: 13),)
+                              Text("Date : ",style: TextStyle(color: AppColor.movieDetailFrontColor,fontSize: 13),),
+                              Text(data[0]['release_date'].toString(),style: TextStyle(color: AppColor.primaryFontColor,fontSize: 13),)
                             ],
                           ),
                         ],
@@ -107,11 +108,26 @@ class _Search_Result_PAgeState extends State<Search_Result_Page> {
   }
   Future<void> getMovieDetail(String name)async{
     print("Search result page name : "+name.toString());
-    final response = await http.get(Uri.parse("https://api.themoviedb.org/3/search/movie?query=${name.toString()}&api_key=89182e82e2191b23aef42078ab24439b"));
+    final response = await http.get(Uri.parse(Api.namesearchUrl(name)));
     final jsondata = jsonDecode(response.body);
-    setState(() {
-      data = jsondata['results'];
-    });
-    print(data);
+    switch (response.statusCode){
+      case 200:
+        setState(() {
+          data=jsondata['results'];
+        });
+      case 400:
+        throw BadRequestException("This is Bad Request");
+      case 500:
+        throw InternalServerException("Internal Server Error");
+      case 404:
+        throw NotFoundException("Data Not Found");
+      default :
+        throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
+    }
+    // setState(() {
+    //     data = jsondata['results'];
+    // });
+    // print(data);
   }
 }
+                                                                                     
