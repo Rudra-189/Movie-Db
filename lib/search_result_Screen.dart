@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:movie/Api/Api_Link.dart';
 import 'package:movie/App_Resources/App_Colors.dart';
 import 'package:movie/Exception/App_exception.dart';
+import 'package:movie/services/Api/Api_Link.dart';
 
 class Search_Result_Page extends StatefulWidget {
   String name;

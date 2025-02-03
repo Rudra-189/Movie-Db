@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:movie/Api/Api_Link.dart';
 import 'package:movie/App_Resources/App_Colors.dart';
 import 'package:movie/Exception/App_exception.dart';
-import 'package:movie/utils/RecommendationsDataModel.dart';
+import 'package:movie/models/MovieDetail.dart';
+import 'package:movie/models/RecommendationsDataModel.dart';
+import 'package:movie/routes/app_routes_name.dart';
+import 'package:movie/services/Api/Api_Link.dart';
 import 'package:readmore/readmore.dart';
 
 class Detail_Page extends StatefulWidget {
@@ -17,11 +20,16 @@ class Detail_Page extends StatefulWidget {
 
 class _Detail_PageState extends State<Detail_Page> {
 
+  Dio dio=Dio();
+  
+  late Future<MovieDetail> _movieDetail;
+
   @override
   void initState() {
     super.initState();
     getMovieDetail(widget.id);
   }
+
   var data;
   @override
   Widget build(BuildContext context) {
@@ -167,7 +175,7 @@ class _Detail_PageState extends State<Detail_Page> {
                                 ),
                               ),
                               onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Detail_Page(id: Data[index].id!,),));
+                                Navigator.pushNamed(context,AppRoutesName.detailPage,arguments: Data[index].id!);
                               },
                             );
                           },
@@ -187,14 +195,13 @@ class _Detail_PageState extends State<Detail_Page> {
       )
     );
   }
+
   Future<void> getMovieDetail(int id)async{
-    print(id);
-    final response = await http.get(Uri.parse(Api.idsearchUrl(id)));
-    final jsondata = jsonDecode(response.body);
+    final response = await dio.get(Api.idsearchUrl(id));
     switch (response.statusCode){
       case 200:
         setState(() {
-          data = jsondata;
+          data=response.data;
         });
       case 400:
         throw BadRequestException("This is Bad Request");
@@ -205,19 +212,13 @@ class _Detail_PageState extends State<Detail_Page> {
       default :
         throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
     }
-    // setState(() {
-    //   data = jsondata;
-    // });
-    // print(data);
   }
-
   Future<RecommendationsDataModel> getdata(int id) async{
     print("RecommendationsDataModel : "+id.toString());
-    final response = await http.get(Uri.parse(Api.recommendationsUrl(id)));
-    final jsondata = jsonDecode(response.body);
+    final response = await dio.get(Api.recommendationsUrl(id));
     switch (response.statusCode){
       case 200:
-        return RecommendationsDataModel.fromJson(jsondata);
+        return RecommendationsDataModel.fromJson(response.data);
       case 400:
         throw BadRequestException("This is Bad Request");
       case 500:

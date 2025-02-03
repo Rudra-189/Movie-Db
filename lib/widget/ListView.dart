@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie/App_Resources/App_Colors.dart';
-import 'package:movie/Detail%20Page.dart';
+import 'package:movie/routes/app_routes_name.dart';
 
 class custom_ListView extends StatelessWidget {
   List WeekList; // List of movie objects
@@ -73,7 +73,7 @@ class custom_ListView extends StatelessWidget {
           ),
         ),
         onTap: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Detail_Page(id: WeekList[index].id!,),));
+          Navigator.pushNamed(context, AppRoutesName.detailPage,arguments: WeekList[index].id!);
         },
       );
     },

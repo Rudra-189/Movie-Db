@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:movie/Api/Api_Link.dart';
 import 'package:movie/App_Resources/App_Colors.dart';
-import 'package:movie/App_Resources/widget/Button_Ui_2.dart';
-import 'package:movie/Detail%20Page.dart';
 import 'package:movie/Exception/App_exception.dart';
-import 'package:movie/Search%20Result%20Page.dart';
-import 'package:movie/utils/SearchDataModel.dart';
+import 'package:movie/models/SearchDataModel.dart';
+import 'package:movie/routes/app_routes_name.dart';
+import 'package:movie/services/Api/Api_Link.dart';
+import 'package:movie/widget/Button_Ui_2.dart';
+
 
 class Search_Page extends StatefulWidget {
   const Search_Page({super.key});
@@ -63,7 +63,7 @@ class _Search_PageState extends State<Search_Page> {
                           if(searchController.text.toString().isNotEmpty){
                             setState(() {
                             });
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Search_Result_Page(name: searchController.text.toLowerCase()),)).then((value) {
+                            Navigator.pushNamed(context,AppRoutesName.searchResultPage,arguments: searchController.text.toLowerCase()).then((value) {
                               print(searchController.text.toLowerCase().toString());
                               if(!searchData.contains(searchController.text.toLowerCase().toString())){
                                 searchData.add(searchController.text.toLowerCase().toString());
@@ -268,7 +268,7 @@ class _Search_PageState extends State<Search_Page> {
                                 ),
                               ),
                               onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Detail_Page(id: result[index].id!),));
+                                Navigator.pushNamed(context,AppRoutesName.detailPage,arguments: result[index].id!);
                               },
                             );
                           },

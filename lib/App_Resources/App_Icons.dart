@@ -8,4 +8,5 @@ abstract class AppIcon{
   static final lockIcon = Icon(Icons.lock, color: AppColor.primaryColor);
   static final visibility_onIcon = Icon(Icons.visibility, color: AppColor.primaryColor, size: 20,);
   static final visibility_offIcon = Icon(Icons.visibility_off, color: AppColor.primaryColor, size: 20,);
+  static final menuIcon = Icon(Icons.menu, color: AppColor.primaryColor, size: 20,);
 }

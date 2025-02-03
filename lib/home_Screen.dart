@@ -1,17 +1,13 @@
-import 'dart:convert';
-import 'dart:async'; // Use this for async-related functionality
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:movie/Api/ApiServices.dart';
-import 'package:movie/Api/Api_Link.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:movie/App_Resources/App_Colors.dart';
-import 'package:movie/Detail%20Page.dart';
-import 'package:movie/Exception/App_exception.dart';
-import 'package:movie/Search%20Page.dart';
-import 'package:movie/utils/DayDataModel.dart';
-import 'package:movie/utils/PopularMovieDataModel.dart';
-import 'package:movie/utils/WeekDataModel.dart';
+import 'package:movie/App_Resources/App_Icons.dart';
+import 'package:movie/models/DayDataModel.dart';
+import 'package:movie/models/PopularMovieDataModel.dart';
+import 'package:movie/models/WeekDataModel.dart';
+import 'package:movie/routes/app_routes_name.dart';
+import 'package:movie/services/Api/ApiServices.dart';
 
 
 class Home_Page extends StatefulWidget {
@@ -23,8 +19,23 @@ class Home_Page extends StatefulWidget {
 
 class _Home_PageState extends State<Home_Page> {
 
+  GoogleSignIn googleSignIn = GoogleSignIn();
+
   TextEditingController searchController = TextEditingController();
   int curentIndex = 0;
+
+  late Future<DayDataModel> _dayMovie;
+  late Future<WeekDataModel> _weekMovie;
+  late Future<PopularMovieDataModel> _populerMovie;
+
+  @override
+  void initState() {
+    super.initState();
+    _dayMovie = ApiServices.getDayMovieData();
+    _weekMovie = ApiServices.getWeekMovieData();
+    _populerMovie = ApiServices.getPopularMovieData();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,27 +48,32 @@ class _Home_PageState extends State<Home_Page> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            leading: InkWell(
-              child: Container(
-                height: 30,
-                width: 30,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Colors.green.shade600.withOpacity(0.5)
+            leading: IconButton(onPressed: (){
+            }, icon: AppIcon.menuIcon),
+            actions: [
+              InkWell(
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.green.shade600.withOpacity(0.5)
+                  ),
+                  child: Icon(Icons.search,color: Colors.white,size: 18,),
                 ),
-                child: Icon(Icons.search,color: Colors.white,size: 18,),
+                onTap: (){
+                  Navigator.pushNamed(context,AppRoutesName.searchPage);
+                },
               ),
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Search_Page()));
-              },
-            ),
+              SizedBox(width: 10,),
+            ],
             backgroundColor: AppColor.primaryBackgroundColor,
-            pinned: false,
+            pinned: true,
             expandedHeight:height*0.6,
             automaticallyImplyLeading: false,
             flexibleSpace: FlexibleSpaceBar(
               background: FutureBuilder<DayDataModel>(
-                future: ApiServices.getDayMovieData(),
+                future: _dayMovie,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(child: CircularProgressIndicator());
@@ -79,7 +95,7 @@ class _Home_PageState extends State<Home_Page> {
                                 ),
                               ),
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => Detail_Page(id: e.id!),));
+                                Navigator.pushNamed(context,AppRoutesName.detailPage,arguments: e.id);
                               },
                             ),).toList(),
                         options: CarouselOptions(
@@ -123,7 +139,7 @@ class _Home_PageState extends State<Home_Page> {
                     Container(
                       height: height *0.425,
                       child: FutureBuilder<WeekDataModel>(
-                        future: ApiServices.getWeekMovieData(),
+                        future: _weekMovie,
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return Center(child: CircularProgressIndicator());
@@ -188,7 +204,7 @@ class _Home_PageState extends State<Home_Page> {
                                   ),
                                 ),
                                 onTap: (){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => Detail_Page(id: WeekList[index].id!,),));
+                                  Navigator.pushNamed(context,AppRoutesName.detailPage,arguments:WeekList[index].id!,);
                                 },
                               );
                             },
@@ -211,7 +227,7 @@ class _Home_PageState extends State<Home_Page> {
                     Container(
                       height: 2300,
                       child: FutureBuilder<PopularMovieDataModel>(
-                        future: ApiServices.getPopularMovieData(),
+                        future: _populerMovie,
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) {
                             return Center(child: CircularProgressIndicator());
@@ -281,7 +297,7 @@ class _Home_PageState extends State<Home_Page> {
                                     ),
                                   ),
                                   onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) => Detail_Page(id: PopularList[index].id!),));
+                                    Navigator.pushNamed(context,AppRoutesName.detailPage,arguments: PopularList[index].id!);
                                   },
                                 );
                               },
@@ -300,74 +316,4 @@ class _Home_PageState extends State<Home_Page> {
       ),
     );
   }
-
-  // Future<DayDataModel> getDayMovieData()async{
-  //   final response = await http.get(Uri.parse(Api.day));
-  //   final jsondata = jsonDecode(response.body);
-  //
-  //   switch (response.statusCode){
-  //     case 200:
-  //       return DayDataModel.fromJson(jsondata);
-  //     case 400:
-  //       throw BadRequestException("This is Bad Request");
-  //     case 500:
-  //       throw InternalServerException("Internal Server Error");
-  //     case 404:
-  //       throw NotFoundException("Data Not Found");
-  //     default :
-  //       throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
-  //   }
-  //
-  //   // if(response.statusCode == 200){
-  //   //   return DayDataModel.fromJson(jsondata);
-  //   // }else{
-  //   //   InternalServerException("Failed to load movie data");
-  //   //   throw Exception('Failed to load movie data');
-  //   // }
-  // }
-  //
-  // Future<WeekDataModel> getWeekMovieData()async{
-  //   final response = await http.get(Uri.parse(Api.week));
-  //   final jsondata = jsonDecode(response.body);
-  //   switch (response.statusCode){
-  //     case 200:
-  //       return WeekDataModel.fromJson(jsondata);
-  //     case 400:
-  //       throw BadRequestException("This is Bad Request");
-  //     case 500:
-  //       throw InternalServerException("Internal Server Error");
-  //     case 404:
-  //       throw NotFoundException("Data Not Found");
-  //     default :
-  //       throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
-  //   }
-  //
-  //   // if(response.statusCode == 200){
-  //   //   return WeekDataModel.fromJson(jsondata);
-  //   // }else{
-  //   //   throw Exception('Failed to load movie data');
-  //   // }
-  // }
-  //
-  // Future<PopularMovieDataModel> getPopularMovieData()async{
-  //   final response = await http.get(Uri.parse(Api.popularMovie));
-  //   final jsondata = jsonDecode(response.body);
-  //   switch (response.statusCode){
-  //     case 200:
-  //       return PopularMovieDataModel.fromJson(jsondata);
-  //     case 400:
-  //       throw BadRequestException("This is Bad Request");
-  //     case 500:
-  //       throw InternalServerException("Internal Server Error");
-  //     case 404:
-  //       throw NotFoundException("Data Not Found");
-  //     default :
-  //       throw FetchDataException("Error occur While communication with server"+'with status code : '+response.statusCode.toString());
-  //   }
-  //   // if(response.statusCode == 200){
-  //   //   return PopularMovieDataModel.fromJson(jsondata);
-  //   // }else{
-  //   //   throw new InternalServerException('///////Failed to load movie data//////');
-  //   // }
-  // }
 }

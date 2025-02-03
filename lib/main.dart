@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:movie/Splash%20Page.dart';
+import 'package:movie/routes/app_routes.dart';
+import 'package:movie/routes/app_routes_name.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Splash_Page(),
+      initialRoute: AppRoutesName.initialScreen,
+      onGenerateRoute: AppRoutes.GenerateRoute,
     );
   }
 }
+

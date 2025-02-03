@@ -1,15 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:movie/App_Resources/App_Colors.dart';
 import 'package:movie/App_Resources/App_Icons.dart';
-import 'package:movie/App_Resources/widget/Button_Ui.dart';
-import 'package:movie/App_Resources/widget/Login_Singnup_common_ui.dart';
-import 'package:movie/App_Resources/widget/Password_TextFromFiled_Ui.dart';
-import 'package:movie/App_Resources/widget/TextFromFiled_Ui.dart';
+import 'package:movie/routes/app_routes_name.dart';
+import 'package:movie/widget/Button_Ui.dart';
+import 'package:movie/widget/Login_Singnup_common_ui.dart';
+import 'package:movie/widget/Password_TextFromFiled_Ui.dart';
+import 'package:movie/widget/TextFromFiled_Ui.dart';
 
-import 'Home Page.dart';
-import 'Login Page.dart';
+import 'home_Screen.dart';
+import 'login_Screen.dart';
 
 class Signup_Page extends StatefulWidget {
   const Signup_Page({super.key});
@@ -20,6 +22,8 @@ class Signup_Page extends StatefulWidget {
 
 class _Signup_PageState extends State<Signup_Page> {
 
+  GoogleSignIn googleSignIn = GoogleSignIn();
+
   final _formkey=GlobalKey<FormState>();
 
   final TextEditingController userController = TextEditingController();
@@ -28,7 +32,6 @@ class _Signup_PageState extends State<Signup_Page> {
 
   @override
   Widget build(BuildContext context) {
-
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
@@ -74,57 +77,67 @@ class _Signup_PageState extends State<Signup_Page> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                height: 60,
-                                width: screenWidth * 0.4,
-                                decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.25),
-                                    borderRadius: BorderRadius.circular(15)),
-                                child: Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/images/facebook-3 1.svg',
-                                          height: 30,
-                                          width: 30,
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          'Facebook',
-                                          style: TextStyle(color: Colors.white, fontSize: 17),
-                                        ),
-                                      ],
-                                    )),
+                              InkWell(
+                                child: Container(
+                                  height: 60,
+                                  width: screenWidth * 0.4,
+                                  decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.25),
+                                      borderRadius: BorderRadius.circular(15)),
+                                  child: Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/facebook.svg',
+                                            height: 30,
+                                            width: 30,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            'Facebook',
+                                            style: TextStyle(color: Colors.white, fontSize: 17),
+                                          ),
+                                        ],
+                                      )),
+                                ),
+                                onTap: (){
+                                  SignIn();
+                                },
                               ),
                               Expanded(child: SizedBox()),
-                              Container(
-                                height: 60,
-                                width: screenWidth * 0.4,
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.25),
-                                  borderRadius: BorderRadius.circular(15),
+                              InkWell(
+                                child: Container(
+                                  height: 60,
+                                  width: screenWidth * 0.4,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.25),
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                  child: Center(
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                            'assets/images/google.svg',
+                                            height: 30,
+                                            width: 30,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            'Google',
+                                            style: TextStyle(color: Colors.white, fontSize: 17),
+                                          ),
+                                        ],
+                                      )),
                                 ),
-                                child: Center(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                          'assets/images/google-icon 1.svg',
-                                          height: 30,
-                                          width: 30,
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        Text(
-                                          'Google',
-                                          style: TextStyle(color: Colors.white, fontSize: 17),
-                                        ),
-                                      ],
-                                    )),
+                                onTap: (){
+
+                                },
                               ),
                             ],
                           ),
@@ -144,7 +157,7 @@ class _Signup_PageState extends State<Signup_Page> {
                     InkWell(
                       child: custom_Button(name: "Create Account"),
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => Home_Page(),));
+                        Navigator.pushNamed(context,AppRoutesName.homePage);
                       },
                     ),
                     Expanded(child: Container()),
@@ -159,7 +172,7 @@ class _Signup_PageState extends State<Signup_Page> {
                           child:
                           Text('Login', style: TextStyle(color: AppColor.subFontColor,decoration: TextDecoration.underline,decorationColor: Colors.white)),
                           onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => Login_Page(),));
+                            Navigator.pushNamed(context, AppRoutesName.loginPage);
                           },
                         ),
                       ],
@@ -173,5 +186,14 @@ class _Signup_PageState extends State<Signup_Page> {
         ),
       ),
     );
+  }
+  Future SignIn()async{
+    GoogleSignInAccount? user = await googleSignIn.signIn();
+    if(user == null){
+      print("User information : ${user}");
+    }else{
+      print("User information : ${user}");
+      Navigator.pushReplacementNamed(context,'/home');
+    }
   }
 }
